@@ -5,6 +5,8 @@ import streamlit as st
 
 st.title('Knüppel Anschluss')
 
+h_beam2 = st.number_input("Höhe Träger [mm]: ", 100, 1500, 400, 50)
+
 F1 = st.number_input("Kraft F1: ", 1, 10000, 525)
 #F1 = 525    #kN
 
@@ -70,7 +72,7 @@ Lweld2 = hohe               #mm
 Fw_Rd2 = Fweld2/Lweld2*10         #kN/cm
 Fweld_Rd2 = fvw*a2/10
 UC_weld2 = Fw_Rd2/Fweld_Rd2
-st.write("UC weld 2 = ", round(UC_weld2,2))
+st.write("Nachweis weld 2 = ", round(UC_weld2,2))
 
 # --- #3 WELD --- #
 n_welds3 = n*2
@@ -81,7 +83,7 @@ Lweld3 = aufR               #mm
 Fw_Rd3 = Fweld3/Lweld3*10         #kN/cm
 Fweld_Rd3 = fvw*a3/10
 UC_weld3 = Fw_Rd3/Fweld_Rd3
-st.write("UC weld 3 = ", round(UC_weld3,2))
+st.write("Nachweis weld 3 = ", round(UC_weld3,2))
 
 # --- #4 WELD --- #
 n_welds4 = 2
@@ -92,7 +94,7 @@ Lweld4 = 360                #mm
 Fw_Rd4 = Fweld4/Lweld4*10         #kN/cm
 Fweld_Rd4 = fvw*a4/10
 UC_weld4 = Fw_Rd4/Fweld_Rd4
-st.write("UC weld 4 = ", round(UC_weld4,2))
+st.write("Nachweis weld 4 = ", round(UC_weld4,2))
 
 #Nachweis vertikales Blech
 fy_blech = 35.5     #kN/cm2
@@ -102,4 +104,34 @@ bnet = b - (n*breite)/10
 Fblech = F2 - Fweld_Rd1
 sigma_blech = Fblech/t/bnet     #kN/cm2
 UC_blech = sigma_blech/fy_blech
-st.write("UC vertikales blech = ", round(UC_blech,2))
+st.write("Nachweis vertikales blech = ", round(UC_blech,2))
+
+
+
+import matplotlib.pyplot as plt
+
+# Define the coordinates in cm!
+xknuppel = [           0,        0,  x+y+aufL/20+aufR/20,  x+y+aufL/20+aufR/20, 0]
+yknuppel = [           0,  hohe/10,  hohe/10,             0,             0]
+xblech =   [       x-t/2+aufL/20,    x-t/2+aufL/20,    x+t/2+aufL/20,         x+t/2+aufL/20,         x-t/2+aufL/20]
+yblech =   [0-h_beam2/10,  hohe/10,  hohe/10,  0-h_beam2/10-0.5,  0-h_beam2/10-0.5]
+xaufL =    [0,  aufL/10,  aufL/10,     0,  0]
+yaufL =    [0,        0,     -0.5,  -0.5,  0]
+xaufR =    [x+y+aufL/20-aufR/20, x+y+aufL/20+aufR/20,  x+y+aufL/20+aufR/20,     x+y+aufL/20-aufR/20,  x+y+aufL/20-aufR/20]
+yaufR =    [                  0,                   0,                 -0.5,  -0.5,  0]
+
+# Create a new plot
+fig, ax = plt.subplots()
+
+# Plot the rectangle
+ax.plot(xknuppel, yknuppel)
+ax.plot(xblech, yblech)
+ax.plot(xaufL, yaufL)
+ax.plot(xaufR, yaufR)
+
+# Set the x and y limits of the plot
+ax.set_xlim([min(xknuppel)-20, max(xknuppel)+20])
+ax.set_ylim([min(yblech)-20, max(yblech)+20])
+
+with st.sidebar:
+    st.pyplot(fig)
