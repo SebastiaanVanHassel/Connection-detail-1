@@ -2,10 +2,29 @@
 from math import sqrt
 import streamlit as st
 
+import Profiles
 
 st.title('Knüppel Anschluss')
 
-h_beam2 = st.number_input("Höhe Träger [mm]: ", 100, 1500, 400, 50)
+all_attr_Profiles = dir(Profiles)
+Profile_names = ()
+for attribute in all_attr_Profiles:
+    obj = getattr(Profiles, attribute)
+    if isinstance(obj, Profiles.Profile):
+        Profile_names += (obj.name,)
+print(Profile_names)
+
+beam_name = st.selectbox("Profile Beam : ",Profile_names, 16)
+beam = getattr(Profiles, beam_name)
+beam.h = beam.h
+st.write("Profile  = ", beam.name)
+st.write("Height           h  [mm]  = ", beam.h)
+st.write("Width            b  [mm]  = ", beam.b)
+st.write("Web thickness    tw [mm]  = ", beam.tw)
+st.write("Flange thickness tf [mm]  = ", beam.tf)
+st.write("Sectional area   A  [cm2] = ", beam.A)
+
+L_beam = st.number_input("Length of the beam [m]: ", 1.00, 30.00, 8.00)
 
 F1 = st.number_input("Kraft F1: ", 1, 10000, 525)
 #F1 = 525    #kN
@@ -110,15 +129,23 @@ st.write("Nachweis vertikales blech = ", round(UC_blech,2))
 
 import matplotlib.pyplot as plt
 
+#KNUPPEL DRAWING
 # Define the coordinates in cm!
 xknuppel = [           0,        0,  x+y+aufL/20+aufR/20,  x+y+aufL/20+aufR/20, 0]
 yknuppel = [           0,  hohe/10,  hohe/10,             0,             0]
 xblech =   [       x-t/2+aufL/20,    x-t/2+aufL/20,    x+t/2+aufL/20,         x+t/2+aufL/20,         x-t/2+aufL/20]
-yblech =   [0-h_beam2/10,  hohe/10,  hohe/10,  0-h_beam2/10-0.5,  0-h_beam2/10-0.5]
+yblech =   [-beam.h/10-0.5+beam.tf/20,  hohe/10,  hohe/10,  -beam.h/10-0.5+beam.tf/20,  -beam.h/10-0.5+beam.tf/20]
 xaufL =    [0,  aufL/10,  aufL/10,     0,  0]
 yaufL =    [0,        0,     -0.5,  -0.5,  0]
 xaufR =    [x+y+aufL/20-aufR/20, x+y+aufL/20+aufR/20,  x+y+aufL/20+aufR/20,     x+y+aufL/20-aufR/20,  x+y+aufL/20-aufR/20]
-yaufR =    [                  0,                   0,                 -0.5,  -0.5,  0]
+yaufR =    [0,        0,     -0.5,  -0.5,  0]
+
+#BEAM DRAWING
+x_topflange = [aufL/20+x+t/2, aufL/20+x+t/2, aufL/20+x+t/2+L_beam*100, aufL/20+x+t/2+L_beam*100, aufL/20+x+t/2]
+y_topflange = [-0.5-beam.tf/10, -0.5, -0.5, -0.5-beam.tf/10, -0.5-beam.tf/10]
+x_bottomflange = [aufL/20+x+t/2, aufL/20+x+t/2, aufL/20+x+t/2+L_beam*100, aufL/20+x+t/2+L_beam*100, aufL/20+x+t/2]
+y_bottomflange = [-0.5-beam.h/10, -0.5-beam.h/10+beam.tf/10, -0.5-beam.h/10+beam.tf/10, -0.5-beam.h/10, -0.5-beam.h/10]
+
 
 # Create a new plot
 fig, ax = plt.subplots()
@@ -128,10 +155,12 @@ ax.plot(xknuppel, yknuppel)
 ax.plot(xblech, yblech)
 ax.plot(xaufL, yaufL)
 ax.plot(xaufR, yaufR)
+ax.plot(x_topflange, y_topflange)
+ax.plot(x_bottomflange, y_bottomflange)
 
 # Set the x and y limits of the plot
-ax.set_xlim([min(xknuppel)-20, max(xknuppel)+20])
-ax.set_ylim([min(yblech)-20, max(yblech)+20])
+ax.set_xlim([-x/10-10, 100])
+ax.set_ylim([-beam.h/10-10, hohe/10+10])
 
 with st.sidebar:
     st.pyplot(fig)
