@@ -105,5 +105,30 @@ bottomflange = draw_rec(x_bottomflange, y_bottomflange)
 web = draw_rec(x_web, y_web)
 
 
-st.text_area(":)",  topflangecs + webcs + bottomflangecs + topflange + web + bottomflange + "\n", height=1000)
+
+#arc
+# A                 arc
+# C                 choose center 
+# 21,0              center point
+# 0,0               start point
+# 21,21             end point
+
+xarcC = -beam.tw/2 - beam.r
+yarcC = -beam.tf - beam.r
+xarcS = -beam.tw/2 - beam.r
+yarcS = -beam.tf
+xarcE = -beam.tw/2
+yarcE = -beam.tf - beam.r
+arcs = []
+arcs.append(f"A")
+arcs.append(f"C")
+arcs.append(f"{xarcC},{yarcC}")
+arcs.append(f"{xarcS},{yarcS}")
+arcs.append(f"{xarcE},{yarcE}")
+arcs.append("\n")
+arcs = "\n".join(arcs)
+
+
+
+st.text_area(":)",  topflangecs + webcs + bottomflangecs + topflange + web + bottomflange + arcs + "\n", height=1000)
 
