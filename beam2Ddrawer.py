@@ -50,7 +50,7 @@ with col1:
         with col15:
             r = st.number_input("Weld Radius [mm]: ", 1, 100, 10)
     
-    L_beam = st.number_input("Length [m]: ", 1.00, 30.00, 8.00)
+    L_beam = 1000*st.number_input("Length [m]: ", 1.00, 30.00, 8.00)
 
 with col2:
     if sectiontype == 'Standard Rolled':
@@ -92,19 +92,18 @@ def draw_rec(x_coords, y_coords):
         # add the current point to the list of commands
         x, y = x_coords[i], y_coords[i]
         commands.append(f"{x},{y}")
-
+    
+    commands.append("\n")
     # return the list of commands as a single string separated by newlines
-    return "  \n  ".join(commands)
+    return "\n".join(commands)
 
 topflangecs = draw_rec(x_topflangecs, y_topflangecs)
-st.write(topflangecs)
 bottomflangecs = draw_rec(x_bottomflangecs, y_bottomflangecs)
-st.write(bottomflangecs)
 webcs = draw_rec(x_webcs, y_webcs)
-st.write(webcs)
 topflange = draw_rec(x_topflange, y_topflange)
-st.write(topflange)
 bottomflange = draw_rec(x_bottomflange, y_bottomflange)
-st.write(bottomflange)
 web = draw_rec(x_web, y_web)
-st.write(web)
+
+
+st.text_area(":)",  topflangecs + webcs + bottomflangecs + topflange + web + bottomflange + "\n", height=1000)
+
