@@ -70,6 +70,14 @@ with col2:
         ax.set_xlim([-beam.b, beam.b])
         ax.set_ylim([-beam.h-15, 15])
         st.pyplot(fig)
+
+        #side view 
+        x_topflange = [beam.b,  beam.b,  beam.b+L_beam,  beam.b+L_beam, beam.b]
+        y_topflange = [-beam.tf, 0, 0, -beam.tf, -beam.tf]
+        x_bottomflange = [beam.b,  beam.b,  beam.b+L_beam,  beam.b+L_beam, beam.b]
+        y_bottomflange = [-beam.h, -beam.h+beam.tf, -beam.h+beam.tf, -beam.h, -beam.h]
+        x_web = [beam.b,  beam.b,  beam.b+L_beam,  beam.b+L_beam, beam.b]
+        y_web = [-beam.h+beam.tf, -beam.tf, -beam.tf, -beam.h+beam.tf, -beam.h+beam.tf]
     else:
         st.write("welded section, image to be continued")
     
@@ -88,9 +96,15 @@ def draw_rec(x_coords, y_coords):
     # return the list of commands as a single string separated by newlines
     return "  \n  ".join(commands)
 
-topflange = draw_rec(x_topflangecs, y_topflangecs)
+topflangecs = draw_rec(x_topflangecs, y_topflangecs)
+st.write(topflangecs)
+bottomflangecs = draw_rec(x_bottomflangecs, y_bottomflangecs)
+st.write(bottomflangecs)
+webcs = draw_rec(x_webcs, y_webcs)
+st.write(webcs)
+topflange = draw_rec(x_topflange, y_topflange)
 st.write(topflange)
-bottomflange = draw_rec(x_bottomflangecs, y_bottomflangecs)
+bottomflange = draw_rec(x_bottomflange, y_bottomflange)
 st.write(bottomflange)
-web = draw_rec(x_webcs, y_webcs)
+web = draw_rec(x_web, y_web)
 st.write(web)
