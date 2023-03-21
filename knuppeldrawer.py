@@ -22,19 +22,6 @@ with col1:
     beam_name = st.selectbox("Profile:",Profile_names, 16)
     # col11, col12, col13, col14, col15 = st.columns(5)
     beam = getattr(Profiles, beam_name)
-    # with col11:
-    #     st.write("Height \n [mm]: \n", beam.h)
-    # with col12:
-    #     st.write("Width Top Flange  [mm]: ", beam.b)
-    #     st.write("Thickness Top Flange [mm]: ", beam.tf)
-    # with col13:
-    #     st.write("Web thickness  [mm]: ", beam.tw)
-    # with col14:
-    #     st.write("Width Bottom Flange  [mm]: ", beam.b)
-    #     st.write("Thickness Bottom Flange [mm]: ", beam.tf)
-    # with col15:
-    #     st.write("Weld Radius [mm]: ", beam.r)
-
 
     st.subheader("KNÜPPEL")   # INPUT KNUPPEL
     F1 = st.number_input("Kraft F1: ", 1, 10000, 525)
@@ -74,12 +61,23 @@ with col1:
 
     t = st.number_input("Thickness vertical plate [mm]: ",  5, 50, 20, 5)
 
-#first create point (as tuple) grid of all necessary points of knuppel
+    hanger = st.radio("Include lifting eye: ",("no", "yes"), horizontal=True)
+    if hanger == "yes":
+        radius = st.number_input("radius of curve knuppel: ", 10, 300, 60, 10)
+        r_eye = st.number_input("radius of eye: ", 5, 100, 20, 5)
+    
+    language = st.radio("Language: ",("English", "Deutsch"), horizontal=True)
+
+#points of Knuppel
 p1 = (0, 0)
 p2 = (0, ktol+voff)
 p3 = (aufL/2+x-t/2-hoff, ktol+h)
-p4 = (p3[0]+2*hoff+t, ktol+h)
-p5 = (x+y+aufL/2+aufR/2 , ktol+voff)
+if hanger == "no":
+    p4 = (p3[0]+2*hoff+t, ktol+h)
+    p5 = (x+y+aufL/2+aufR/2 , ktol+voff)
+else:
+    p4 = (p3[0]+hoff+t/2+y+aufR/2-radius, ktol+h)
+    p5 = (x+y+aufL/2+aufR/2 , ktol+h-radius)
 p6 = (x+y+aufL/2+aufR/2 , 0)
 p7 = (x+y+aufL/2-aufR/2 , 0)
 p8 = (x+y+aufL/2-aufR/2 , ktol)
@@ -122,6 +120,8 @@ elif n == 2:
     xknuppelcs = [-beam.b-beam.b/2-e_k/2-b/2,  -beam.b-beam.b/2-e_k/2-b/2,  -beam.b-beam.b/2-e_k/2+b/2,  -beam.b-beam.b/2-e_k/2+b/2, -beam.b-beam.b/2+e_k/2-b/2, -beam.b-beam.b/2+e_k/2-b/2, -beam.b-beam.b/2+e_k/2+b/2, -beam.b-beam.b/2+e_k/2+b/2]
     yknuppelcs = [           0,  ktol+h,  ktol+h,             0,             0,  ktol+h, ktol+h, 0 ]
 
+
+#plot in web app
 fig, ax = plt.subplots()
 ax.scatter(xcoordskn, ycoordskn, s=10, color='black')
 ax.plot(xcoordskn, ycoordskn)
@@ -131,26 +131,20 @@ ax.plot(x_topflangecs, y_topflangecs)
 ax.plot(x_bottomflangecs, y_bottomflangecs)
 ax.plot(x_webcs, y_webcs)
 ax.plot(xknuppelcs, yknuppelcs, color='red')
-
 ax.set_aspect('equal')
-
 with col2:
     st.pyplot(fig)
 
 
-# function that generates BricsCAD command prompts
+# --- BricsCAD prompt generator --- #
 def draw_element(x_coords, y_coords):
     assert len(x_coords) == len(y_coords), "Error: x and y coordinate arrays must have the same length"
     n = len(x_coords)
-
-    commands = ["L"]  # start the line command
+    commands = ["L"] 
     for i in range(n):
-        # add the current point to the list of commands
         x, y = x_coords[i], y_coords[i]
         commands.append(f"{x},{y}")
-    
     commands.append("\n")
-    # return the list of commands as a single string separated by newlines
     return "\n".join(commands)
 
 st.subheader("BricsCAD prompt generator!")
@@ -162,4 +156,30 @@ csbottomflange = draw_element(x_bottomflangecs, y_bottomflangecs)
 csweb = draw_element(x_webcs, y_webcs)
 csknuppel = draw_element(xknuppelcs, yknuppelcs)
 
-st.text_area(":)",  knuppel2D + plate2D + csplate2D + cstopflange + csbottomflange + csweb + csknuppel + "\n", height=1000)
+if language == "English":
+    circle = "C"
+    arc = "A"
+    center = "C"
+else:
+    circle = "K"
+    arc = "B"
+    center = "C"
+# lifting eye
+if hanger == "yes":
+    arcs = []
+    arcs.append(f"{circle}")
+    arcs.append(f"{p4[0]},{p5[1]}")
+    arcs.append(f"{r_eye}")
+
+    arcs.append(f"{arc}")
+    arcs.append(f"{center}")
+    arcs.append(f"{p4[0]},{p5[1]}")
+    arcs.append(f"{p4[0]},{p4[1]}")
+    arcs.append(f"{p5[0]},{p5[1]}")
+    arcs.append("\n")
+    
+    arcs = "\n".join(arcs)
+else:
+    arcs = "\n"
+
+st.text_area(":)",  knuppel2D + plate2D + csplate2D + cstopflange + csbottomflange + csweb + csknuppel + arcs + "U\n", height=1000)
