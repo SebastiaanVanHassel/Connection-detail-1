@@ -67,9 +67,9 @@ with col2:
         ax.plot(x_bottomflangecs, y_bottomflangecs, color='blue')
         ax.plot(x_webcs, y_webcs, color='lightblue')
         # Set the x and y limits of the plot
-        # ax.set_xlim([-beam.b, beam.b])
-        # ax.set_ylim([-beam.h-15, 15])
-        ax.set_aspect('equal')
+        ax.set_xlim([-beam.b, beam.b])
+        ax.set_ylim([-beam.h-15, 15])
+   
         st.pyplot(fig)
 
         #side view 
