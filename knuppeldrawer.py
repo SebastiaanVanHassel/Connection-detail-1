@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 # -------------------------------------------------- #
 st. set_page_config(layout="wide")
-st.header("Beam 2D drawer")
+st.header("Knüppel drawer")
 
 import Profiles
 #Profiles library
