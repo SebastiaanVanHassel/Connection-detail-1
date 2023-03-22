@@ -163,7 +163,7 @@ if language == "English":
 else:
     circle = "K"
     arc = "B"
-    center = "C"
+    center = "Z"
 # lifting eye
 if hanger == "yes":
     arcs = []
