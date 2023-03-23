@@ -48,7 +48,7 @@ with col1:
         aufL = st.number_input("Auflager breite links [mm]: ", 40, 120, 80, 10)
     with col1re:
         if n > 1:
-            e_k = st.number_input("e [mm]: ", 10, 200, 80, 5)
+            e_k = st.number_input("e [mm]: ", 10, 200, 120+b, 5)
         else:
             e_k = 0
         h = st.number_input("Höhe [mm]: ", 10, 300, 160, 5)
@@ -64,7 +64,7 @@ with col1:
     hanger = st.radio("Include lifting eye: ",("no", "yes"), horizontal=True)
     if hanger == "yes":
         radius = st.number_input("radius of curve knuppel: ", 10, 300, 60, 10)
-        r_eye = st.number_input("radius of eye: ", 5, 100, 20, 5)
+        r_eye = st.number_input("radius of eye: ", 5, 100, 19, 1)
     
     language = st.radio("Language: ",("English", "Deutsch"), horizontal=True)
 
