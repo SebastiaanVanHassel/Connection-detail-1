@@ -1,7 +1,7 @@
 import openai
 import streamlit as st
 
-openai.api_key = "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"
+openai.api_key = "xxx"
 
 
 st.title("Isaac the GPT Structural Engineer guide")
